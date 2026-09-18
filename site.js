@@ -43,3 +43,12 @@ if(neonSections.length){
   addEventListener('scroll',requestNeon,{passive:true});
   addEventListener('resize',requestNeon);
 }
+
+const revealCards=[...document.querySelectorAll('.reveal-grid .project-card')];
+if(revealCards.length){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){revealCards.forEach(card=>card.classList.add('is-visible'));}
+  else{
+    const cardObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');cardObserver.unobserve(entry.target);}})},{threshold:.16,rootMargin:'0px 0px -7% 0px'});
+    revealCards.forEach((card,index)=>{card.style.transitionDelay=`${index*120}ms`;cardObserver.observe(card);});
+  }
+}

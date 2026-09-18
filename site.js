@@ -63,3 +63,9 @@ if(revealCards.length){
     renderCards();addEventListener('scroll',requestCards,{passive:true});addEventListener('resize',requestCards);
   }
 }
+
+const profileCard=document.querySelector('.profile-copy');
+if(profileCard&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const profileObserver=new IntersectionObserver(entries=>entries.forEach(entry=>profileCard.classList.toggle('is-visible',entry.isIntersecting)),{threshold:.22,rootMargin:'0px 0px -8% 0px'});
+  profileObserver.observe(profileCard);
+}else if(profileCard){profileCard.classList.add('is-visible');}

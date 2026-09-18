@@ -48,7 +48,18 @@ const revealCards=[...document.querySelectorAll('.reveal-grid .project-card')];
 if(revealCards.length){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){revealCards.forEach(card=>card.classList.add('is-visible'));}
   else{
-    const cardObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');cardObserver.unobserve(entry.target);}})},{threshold:.16,rootMargin:'0px 0px -7% 0px'});
-    revealCards.forEach((card,index)=>{card.style.transitionDelay=`${index*120}ms`;cardObserver.observe(card);});
+    let lastScrollY=scrollY,cardTicking=false;
+    revealCards.forEach((card,index)=>card.style.transitionDelay=`${index*120}ms`);
+    const renderCards=()=>{
+      const goingDown=scrollY>=lastScrollY;
+      revealCards.forEach((card,index)=>{
+        const rect=card.getBoundingClientRect();
+        if(goingDown&&rect.top<innerHeight*(.91-index*.015)&&rect.bottom>0)card.classList.add('is-visible');
+        if(!goingDown&&rect.top>innerHeight*(.2+index*.035))card.classList.remove('is-visible');
+      });
+      lastScrollY=scrollY;cardTicking=false;
+    };
+    const requestCards=()=>{if(!cardTicking){requestAnimationFrame(renderCards);cardTicking=true}};
+    renderCards();addEventListener('scroll',requestCards,{passive:true});addEventListener('resize',requestCards);
   }
 }

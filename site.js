@@ -65,7 +65,20 @@ if(revealCards.length){
 }
 
 const profileCard=document.querySelector('.profile-copy');
-if(profileCard&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
-  const profileObserver=new IntersectionObserver(entries=>entries.forEach(entry=>profileCard.classList.toggle('is-visible',entry.isIntersecting)),{threshold:.22,rootMargin:'0px 0px -8% 0px'});
-  profileObserver.observe(profileCard);
-}else if(profileCard){profileCard.classList.add('is-visible');}
+if(profileCard){
+  const profileSection=profileCard.closest('.section');
+  let profileTicking=false;
+  const renderProfileFrame=()=>{
+    const rect=profileSection.getBoundingClientRect();
+    const start=innerHeight*.82;
+    const end=innerHeight-rect.height;
+    const progress=Math.max(0,Math.min(1,(start-rect.top)/Math.max(1,start-end)));
+    profileCard.style.setProperty('--profile-progress',`${(progress*360).toFixed(1)}deg`);
+    profileCard.style.setProperty('--profile-glow',progress.toFixed(3));
+    profileTicking=false;
+  };
+  const requestProfileFrame=()=>{if(!profileTicking){requestAnimationFrame(renderProfileFrame);profileTicking=true}};
+  renderProfileFrame();
+  addEventListener('scroll',requestProfileFrame,{passive:true});
+  addEventListener('resize',requestProfileFrame);
+}

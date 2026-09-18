@@ -24,3 +24,22 @@ if(orbit){
   addEventListener('resize',requestRender);
   reduced.addEventListener?.('change',requestRender);
 }
+
+const neonSections=[...document.querySelectorAll('.neon-section')];
+if(neonSections.length){
+  let neonTicking=false;
+  const renderNeon=()=>{
+    neonSections.forEach(section=>{
+      const rect=section.getBoundingClientRect();
+      const progress=Math.max(0,Math.min(1,(innerHeight-rect.top)/(innerHeight+rect.height*.35)));
+      section.style.setProperty('--neon-level',progress.toFixed(3));
+      section.style.setProperty('--neon-opacity',(0.15+progress*0.85).toFixed(3));
+      section.style.setProperty('--neon-clip',`${(100-progress*100).toFixed(1)}%`);
+    });
+    neonTicking=false;
+  };
+  const requestNeon=()=>{if(!neonTicking){requestAnimationFrame(renderNeon);neonTicking=true}};
+  renderNeon();
+  addEventListener('scroll',requestNeon,{passive:true});
+  addEventListener('resize',requestNeon);
+}
